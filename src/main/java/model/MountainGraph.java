@@ -116,12 +116,12 @@ public class MountainGraph {
                 RobotPath newPath = new RobotPath(new ArrayList<>(currentTrees));
                 foundPaths.add(newPath);
                 int currentPathLength = currentTrees.size();
-                if (currentPathLength == maxPathLength) {
-                    longestPaths.add(foundPaths.size() - 1);
-                }
                 if (currentPathLength > maxPathLength) {
                     maxPathLength = currentPathLength;
                     longestPaths.clear();
+                }
+                if (currentPathLength == maxPathLength) {
+                    longestPaths.add(foundPaths.size() - 1);
                 }
             }
             if (currentTree.getAdjacentTreesNum() > 0) {

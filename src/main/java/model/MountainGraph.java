@@ -1,17 +1,24 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MountainGraph {
 
     private int rowsNum;
     private int colsNum;
     private int treesNum;
     private CoffeeTree[] treesGraph;
+    private List<Integer> pathRoots;
+    private List<RobotPath> foundPaths;
 
     public MountainGraph(int[][] mountainMap) {
         rowsNum = mountainMap.length;
         colsNum = mountainMap[0].length;
         treesNum = rowsNum * colsNum;
         treesGraph = new CoffeeTree[treesNum];
+        pathRoots = new ArrayList<>();
+        foundPaths = new ArrayList<>();
         initializeTreesGraph(mountainMap);
     }
 
@@ -30,34 +37,46 @@ public class MountainGraph {
     }
 
     private void addAdjacentTrees(CoffeeTree tree, int treeRow, int treeCol, int[][] mountainMap) {
+        boolean isPathRoot = true;
         if (treeRow - 1 >= 0) {
             int nortTreeElev = mountainMap[treeRow - 1][treeCol];
-            if (isAdjacentTreeValid(nortTreeElev, tree)) {
-                tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow - 1, treeCol));
+            if (nortTreeElev != -1) {
+                if (tree.isAdjacentTreeAbove(nortTreeElev)) {
+                    tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow - 1, treeCol));
+                }
+                isPathRoot = tree.isAdjacentTreeAbove(nortTreeElev);
             }
         }
         if (treeRow + 1 < rowsNum) {
             int southTreeElev = mountainMap[treeRow + 1][treeCol];
-            if (isAdjacentTreeValid(southTreeElev, tree)) {
-                tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow + 1, treeCol));
+            if (southTreeElev != -1) {
+                if (tree.isAdjacentTreeAbove(southTreeElev)) {
+                    tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow + 1, treeCol));
+                }
+                isPathRoot = isPathRoot && tree.isAdjacentTreeAbove(southTreeElev);
             }
         }
         if (treeCol - 1 >= 0) {
             int westTreeElev = mountainMap[treeRow][treeCol - 1];
-            if (isAdjacentTreeValid(westTreeElev, tree)) {
-                tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow, treeCol - 1));
+            if (westTreeElev != -1) {
+                if (tree.isAdjacentTreeAbove(westTreeElev)) {
+                    tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow, treeCol - 1));
+                }
+                isPathRoot = isPathRoot && tree.isAdjacentTreeAbove(westTreeElev);
             }
         }
         if (treeCol + 1 < colsNum) {
             int eastTreeElev = mountainMap[treeRow][treeCol + 1];
-            if (isAdjacentTreeValid(eastTreeElev, tree)) {
-                tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow, treeCol + 1));
+            if (eastTreeElev != -1) {
+                if (tree.isAdjacentTreeAbove(eastTreeElev)) {
+                    tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow, treeCol + 1));
+                }
+                isPathRoot = isPathRoot && tree.isAdjacentTreeAbove(eastTreeElev);
             }
         }
-    }
-
-    public boolean isAdjacentTreeValid(int nextTreeElev, CoffeeTree currentTree) {
-        return nextTreeElev != -1 && nextTreeElev > currentTree.getElevation();
+        if (isPathRoot) {
+            pathRoots.add(getTreeIdxFromMapPos(treeRow, treeCol));
+        }
     }
 
     public int[] getMapPosFromIdx(int idx) {
@@ -72,5 +91,33 @@ public class MountainGraph {
 
     public CoffeeTree[] getTreesGraph() {
         return treesGraph;
+    }
+
+    public void searchPaths() {
+        for (Integer currentRoot : pathRoots) {
+            CoffeeTree currentRootTree = treesGraph[currentRoot];
+            List<Integer> pathRoot = new ArrayList<>();
+            pathRoot.add(currentRootTree.getElevation());
+            searchPathsInAdjacentTrees(currentRootTree.getAdjacentTrees(), pathRoot);
+        }
+    }
+
+    private void searchPathsInAdjacentTrees(List<Integer> adjacents, List<Integer> currentTrees) {
+        for (Integer adjTree : adjacents) {
+            CoffeeTree currentTree = treesGraph[adjTree];
+            currentTrees.add(currentTree.getElevation());
+            if (currentTree.getAdjacentTreesNum() == 0) {
+                RobotPath newPath = new RobotPath(new ArrayList<>(currentTrees));
+                foundPaths.add(newPath);
+            }
+            if (currentTree.getAdjacentTreesNum() > 0) {
+                searchPathsInAdjacentTrees(currentTree.getAdjacentTrees(), currentTrees);
+            }
+            currentTrees.remove(currentTrees.size() - 1);
+        }
+    }
+
+    public int getNumOfPaths() {
+        return foundPaths.size();
     }
 }

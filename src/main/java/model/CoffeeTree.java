@@ -23,8 +23,20 @@ public class CoffeeTree {
         return elevation;
     }
 
+    public int getAdjacentTreesNum() {
+        return adjacentHarvestableTrees.size();
+    }
+
     public List<Integer> getAdjacentTrees() {
         return adjacentHarvestableTrees;
+    }
+
+    public boolean isAdjacentTreeAbove(int nextTreeElev) {
+        return nextTreeElev > this.elevation;
+    }
+
+    public boolean isAdjacentTreeSameLevel(int nextTreeElev) {
+        return nextTreeElev == this.elevation;
     }
 
     @Override

@@ -8,6 +8,7 @@ public class App {
         MountainReader reader = new MountainReader("test.txt");
         int[][] map = reader.readMountainMap();
         MountainGraph mountainGrap = new MountainGraph(map);
-        System.out.println(Arrays.toString(mountainGrap.getTreesGraph()));
+        mountainGrap.searchPaths();
+        System.out.println(mountainGrap.getNumOfPaths());
     }
 }

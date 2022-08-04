@@ -11,6 +11,9 @@ public class MountainGraph {
     private CoffeeTree[] treesGraph;
     private List<Integer> pathRoots;
     private List<RobotPath> foundPaths;
+    private int maxPathLength;
+    private List<Integer> longestPaths;
+    private RobotPath steepesPath;
 
     public MountainGraph(int[][] mountainMap) {
         rowsNum = mountainMap.length;
@@ -19,6 +22,8 @@ public class MountainGraph {
         treesGraph = new CoffeeTree[treesNum];
         pathRoots = new ArrayList<>();
         foundPaths = new ArrayList<>();
+        longestPaths = new ArrayList<>();
+        maxPathLength = 0;
         initializeTreesGraph(mountainMap);
     }
 
@@ -100,6 +105,7 @@ public class MountainGraph {
             pathRoot.add(currentRootTree.getElevation());
             searchPathsInAdjacentTrees(currentRootTree.getAdjacentTrees(), pathRoot);
         }
+        getSteepestPath();
     }
 
     private void searchPathsInAdjacentTrees(List<Integer> adjacents, List<Integer> currentTrees) {
@@ -109,6 +115,14 @@ public class MountainGraph {
             if (currentTree.getAdjacentTreesNum() == 0) {
                 RobotPath newPath = new RobotPath(new ArrayList<>(currentTrees));
                 foundPaths.add(newPath);
+                int currentPathLength = currentTrees.size();
+                if (currentPathLength > maxPathLength) {
+                    maxPathLength = currentPathLength;
+                    longestPaths.clear();
+                }
+                if (currentPathLength == maxPathLength) {
+                    longestPaths.add(foundPaths.size() - 1);
+                }
             }
             if (currentTree.getAdjacentTreesNum() > 0) {
                 searchPathsInAdjacentTrees(currentTree.getAdjacentTrees(), currentTrees);
@@ -119,5 +133,22 @@ public class MountainGraph {
 
     public int getNumOfPaths() {
         return foundPaths.size();
+    }
+
+    public RobotPath getSteepestPath() {
+        int maxPathElev = 0;
+        for (int pathIdx : longestPaths) {
+            RobotPath currentPath = foundPaths.get(pathIdx);
+            if (currentPath.getElevation() > maxPathElev) {
+                steepesPath = currentPath;
+            }
+        }
+        return steepesPath;
+    }
+
+    public void printResults() {
+        System.out.println("Steepest path:");
+        System.out.println(steepesPath);
+        System.out.println("length: " + maxPathLength);
     }
 }

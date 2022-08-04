@@ -9,6 +9,6 @@ public class App {
         int[][] map = reader.readMountainMap();
         MountainGraph mountainGrap = new MountainGraph(map);
         mountainGrap.searchPaths();
-        System.out.println(mountainGrap.getNumOfPaths());
+        mountainGrap.printResults();
     }
 }

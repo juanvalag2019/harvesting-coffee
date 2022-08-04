@@ -1,10 +1,14 @@
+import java.util.Arrays;
+
 import input.MountainReader;
+import model.MountainGraph;
 
 public class App {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         MountainReader reader = new MountainReader("test.txt");
         int[][] map = reader.readMountainMap();
-        System.out.println(map.length);
-        System.out.println(map[0][2]);
+        MountainGraph mountainGrap = new MountainGraph(map);
+        mountainGrap.searchPaths();
+        System.out.println(mountainGrap.getNumOfPaths());
     }
 }

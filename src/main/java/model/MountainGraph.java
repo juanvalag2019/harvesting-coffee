@@ -43,40 +43,48 @@ public class MountainGraph {
 
     private void addAdjacentTrees(CoffeeTree tree, int treeRow, int treeCol, int[][] mountainMap) {
         boolean isPathRoot = true;
-        if (treeRow - 1 >= 0) {
-            int nortTreeElev = mountainMap[treeRow - 1][treeCol];
+        int nextRow = treeRow - 1;
+        if (nextRow >= 0) {
+            int nortTreeElev = mountainMap[nextRow][treeCol];
             if (nortTreeElev != -1) {
                 if (tree.isAdjacentTreeAbove(nortTreeElev)) {
-                    tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow - 1, treeCol));
+                    tree.addAdjacentTree(getTreeIdxFromMapPos(nextRow, treeCol));
+                } else if (tree.isAdjacentTreeBelow(nortTreeElev)) {
+                    isPathRoot = false;
                 }
-                isPathRoot = tree.isAdjacentTreeAbove(nortTreeElev);
             }
         }
-        if (treeRow + 1 < rowsNum) {
-            int southTreeElev = mountainMap[treeRow + 1][treeCol];
+        nextRow = treeRow + 1;
+        if (nextRow < rowsNum) {
+            int southTreeElev = mountainMap[nextRow][treeCol];
             if (southTreeElev != -1) {
                 if (tree.isAdjacentTreeAbove(southTreeElev)) {
-                    tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow + 1, treeCol));
+                    tree.addAdjacentTree(getTreeIdxFromMapPos(nextRow, treeCol));
+                } else if (tree.isAdjacentTreeBelow(southTreeElev)) {
+                    isPathRoot = false;
                 }
-                isPathRoot = isPathRoot && tree.isAdjacentTreeAbove(southTreeElev);
             }
         }
-        if (treeCol - 1 >= 0) {
-            int westTreeElev = mountainMap[treeRow][treeCol - 1];
+        int nextCol = treeCol - 1;
+        if (nextCol >= 0) {
+            int westTreeElev = mountainMap[treeRow][nextCol];
             if (westTreeElev != -1) {
                 if (tree.isAdjacentTreeAbove(westTreeElev)) {
-                    tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow, treeCol - 1));
+                    tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow, nextCol));
+                } else if (tree.isAdjacentTreeBelow(westTreeElev)) {
+                    isPathRoot = false;
                 }
-                isPathRoot = isPathRoot && tree.isAdjacentTreeAbove(westTreeElev);
             }
         }
-        if (treeCol + 1 < colsNum) {
-            int eastTreeElev = mountainMap[treeRow][treeCol + 1];
+        nextCol = treeCol + 1;
+        if (nextCol < colsNum) {
+            int eastTreeElev = mountainMap[treeRow][nextCol];
             if (eastTreeElev != -1) {
                 if (tree.isAdjacentTreeAbove(eastTreeElev)) {
-                    tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow, treeCol + 1));
+                    tree.addAdjacentTree(getTreeIdxFromMapPos(treeRow, nextCol));
+                } else if (tree.isAdjacentTreeBelow(eastTreeElev)) {
+                    isPathRoot = false;
                 }
-                isPathRoot = isPathRoot && tree.isAdjacentTreeAbove(eastTreeElev);
             }
         }
         if (isPathRoot) {
@@ -149,6 +157,7 @@ public class MountainGraph {
     public void printResults() {
         System.out.println("Steepest path:");
         System.out.println(steepesPath);
+        System.out.println("steepness: " + steepesPath.getElevation());
         System.out.println("length: " + maxPathLength);
     }
 }

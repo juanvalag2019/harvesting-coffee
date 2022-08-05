@@ -35,8 +35,8 @@ public class CoffeeTree {
         return nextTreeElev > this.elevation;
     }
 
-    public boolean isAdjacentTreeSameLevel(int nextTreeElev) {
-        return nextTreeElev == this.elevation;
+    public boolean isAdjacentTreeBelow(int nextTreeElev) {
+        return nextTreeElev < this.elevation;
     }
 
     @Override
